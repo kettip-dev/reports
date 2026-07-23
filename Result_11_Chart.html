@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DurianX Weekly Merchant Performance</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- ApexCharts -->
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: radial-gradient(circle at top right, #1e1b4b 0%, #0f172a 100%);
+        }
+        .font-outfit {
+            font-family: 'Outfit', sans-serif;
+        }
+        .glass-card {
+            background: rgba(30, 41, 59, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.3);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(99, 102, 241, 0.3);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(99, 102, 241, 0.6);
+        }
+    </style>
+</head>
+<body class="text-slate-100 min-h-screen py-8 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto space-y-8">
+        
+        <!-- Header Section -->
+        <header class="flex flex-col md:flex-row md:items-center md:justify-between pb-6 border-b border-slate-800 gap-4">
+            <div>
+                <div class="flex items-center space-x-3">
+                    <span class="px-3 py-1 text-xs font-semibold text-indigo-400 bg-indigo-500/10 border border-indigo-500/20 rounded-full font-outfit uppercase tracking-wider">Reports</span>
+                    <span class="text-slate-500 text-xs">Generated from Result_11.csv</span>
+                </div>
+                <h1 class="text-3xl md:text-4xl font-extrabold font-outfit mt-2 tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-indigo-200 to-indigo-400">
+                    Weekly Performance Dashboard
+                </h1>
+                <p class="text-slate-400 mt-1 text-sm md:text-base">
+                    Weekly comparative analysis grouped by merchant names and order volumes.
+                </p>
+            </div>
+            <div class="flex items-center space-x-3 bg-slate-900/60 p-1.5 rounded-xl border border-slate-800/80 self-start md:self-auto">
+                <button id="groupWeekBtn" onclick="setGroupingDirection('week')" class="px-4 py-2 text-xs md:text-sm font-medium rounded-lg transition-all duration-300 bg-indigo-600 text-white shadow-lg shadow-indigo-600/20">
+                    X-Axis: Weeks
+                </button>
+                <button id="groupMerchantBtn" onclick="setGroupingDirection('merchant')" class="px-4 py-2 text-xs md:text-sm font-medium rounded-lg transition-all duration-300 text-slate-400 hover:text-white">
+                    X-Axis: Merchants
+                </button>
+            </div>
+        </header>
+
+        <!-- KPI Summary Cards -->
+        <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 font-outfit">
+            <!-- Total Orders -->
+            <div class="glass-card rounded-2xl p-6 flex flex-col justify-between transition-all duration-300 hover:translate-y-[-2px] hover:shadow-xl hover:shadow-indigo-500/5">
+                <div class="flex justify-between items-start">
+                    <span class="text-slate-400 text-sm font-medium uppercase tracking-wider">Total Orders</span>
+                    <span class="p-2 bg-indigo-500/10 rounded-xl text-indigo-400 border border-indigo-500/20">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+                    </span>
+                </div>
+                <div class="mt-4">
+                    <h3 id="kpiTotalOrders" class="text-3xl font-bold tracking-tight text-white">-</h3>
+                    <p class="text-xs text-indigo-400 mt-1">Sum of all order records</p>
+                </div>
+            </div>
+            
+            <!-- Total Revenue -->
+            <div class="glass-card rounded-2xl p-6 flex flex-col justify-between transition-all duration-300 hover:translate-y-[-2px] hover:shadow-xl hover:shadow-emerald-500/5">
+                <div class="flex justify-between items-start">
+                    <span class="text-slate-400 text-sm font-medium uppercase tracking-wider">Total Revenue</span>
+                    <span class="p-2 bg-emerald-500/10 rounded-xl text-emerald-400 border border-emerald-500/20">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M12 16v1M5.9 18.13a11.969 11.969 0 01-1.683-1.683m16.183 0c-.516.634-1.08 1.2-1.683 1.683M18.13 5.9A11.954 11.954 0 0115 4.3M9 4.3a11.954 11.954 0 01-3.1 1.6M12 21a9.003 9.003 0 008.367-5.633M4 12c0 1.99.647 3.829 1.742 5.322"/></svg>
+                    </span>
+                </div>
+                <div class="mt-4">
+                    <h3 id="kpiTotalRevenueUSD" class="text-3xl font-bold tracking-tight text-white">-</h3>
+                    <p id="kpiTotalRevenueKHR" class="text-xs text-slate-400 mt-1">-</p>
+                </div>
+            </div>
+
+            <!-- Total Weeks -->
+            <div class="glass-card rounded-2xl p-6 flex flex-col justify-between transition-all duration-300 hover:translate-y-[-2px] hover:shadow-xl hover:shadow-cyan-500/5">
+                <div class="flex justify-between items-start">
+                    <span class="text-slate-400 text-sm font-medium uppercase tracking-wider">Time Range</span>
+                    <span class="p-2 bg-cyan-500/10 rounded-xl text-cyan-400 border border-cyan-500/20">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                    </span>
+                </div>
+                <div class="mt-4">
+                    <h3 id="kpiWeeksCount" class="text-3xl font-bold tracking-tight text-white">-</h3>
+                    <p class="text-xs text-cyan-400 mt-1">Recorded weeks</p>
+                </div>
+            </div>
+
+            <!-- Top Merchant Store -->
+            <div class="glass-card rounded-2xl p-6 flex flex-col justify-between transition-all duration-300 hover:translate-y-[-2px] hover:shadow-xl hover:shadow-amber-500/5">
+                <div class="flex justify-between items-start">
+                    <span class="text-slate-400 text-sm font-medium uppercase tracking-wider">Top Merchant</span>
+                    <span class="p-2 bg-amber-500/10 rounded-xl text-amber-400 border border-amber-500/20">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>
+                    </span>
+                </div>
+                <div class="mt-4 overflow-hidden">
+                    <h3 id="kpiTopMerchant" class="text-lg font-bold truncate text-white" title="-">-</h3>
+                    <p id="kpiTopMerchantOrders" class="text-xs text-amber-400 mt-1">-</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Chart Section -->
+        <section class="glass-card rounded-2xl p-6 space-y-6">
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 border-b border-slate-800/60 pb-4">
+                <div>
+                    <h2 class="text-xl font-bold font-outfit text-white">Grouped Performance Comparison</h2>
+                    <p class="text-xs text-slate-400 mt-0.5">Visualize order metrics grouped by week and merchant.</p>
+                </div>
+                
+                <!-- Controls -->
+                <div class="flex flex-wrap items-center gap-3">
+                    <!-- Metric Select -->
+                    <select id="metricSelect" onchange="handleFilterChange()" class="bg-slate-900/80 border border-slate-800 text-slate-200 text-xs rounded-xl px-3 py-2.5 focus:outline-none focus:border-indigo-500 transition-colors duration-300">
+                        <option value="orders">Metric: Orders Volume</option>
+                        <option value="revenue">Metric: Revenue (USD)</option>
+                    </select>
+
+                    <!-- Chart Mode -->
+                    <select id="chartModeSelect" onchange="handleFilterChange()" class="bg-slate-900/80 border border-slate-800 text-slate-200 text-xs rounded-xl px-3 py-2.5 focus:outline-none focus:border-indigo-500 transition-colors duration-300">
+                        <option value="grouped">Type: Grouped Columns</option>
+                        <option value="stacked">Type: Stacked Columns</option>
+                        <option value="percent">Type: 100% Stacked Columns</option>
+                    </select>
+
+                    <!-- Search Filter (specifically for merchants) -->
+                    <div class="relative min-w-[180px]">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                        </span>
+                        <input id="searchInput" type="text" oninput="handleFilterChange()" placeholder="Filter merchants..." class="w-full bg-slate-900/80 border border-slate-800 text-slate-200 text-xs rounded-xl pl-9 pr-4 py-2.5 focus:outline-none focus:border-indigo-500 transition-colors duration-300">
+                    </div>
+
+                    <!-- Horizontal Toggle -->
+                    <div class="flex items-center bg-slate-900/85 p-1 rounded-xl border border-slate-800">
+                        <button id="chartColumnBtn" onclick="setChartHorizontal(false)" class="p-2 rounded-lg text-indigo-400 bg-indigo-500/10 border border-indigo-500/20" title="Vertical Columns">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                        </button>
+                        <button id="chartBarBtn" onclick="setChartHorizontal(true)" class="p-2 rounded-lg text-slate-400 hover:text-slate-200" title="Horizontal Bars">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="transform: rotate(90deg);"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chart Display -->
+            <div class="w-full relative min-h-[450px]">
+                <div id="chart" class="w-full"></div>
+            </div>
+        </section>
+
+        <!-- Detailed Table Section -->
+        <section class="glass-card rounded-2xl p-6 space-y-4">
+            <div>
+                <h2 class="text-xl font-bold font-outfit text-white">Merchant Weekly Performance breakdown</h2>
+                <p class="text-xs text-slate-400 mt-0.5">Complete record list parsed from CSV, matching current filters.</p>
+            </div>
+            
+            <div class="overflow-x-auto rounded-xl border border-slate-800">
+                <table class="w-full border-collapse text-left text-xs md:text-sm text-slate-300">
+                    <thead class="bg-slate-900/80 text-slate-400 border-b border-slate-800 font-outfit uppercase tracking-wider">
+                        <tr>
+                            <th class="py-3.5 px-4 font-semibold">Merchant (Contact Person)</th>
+                            <th class="py-3.5 px-4 font-semibold">Week</th>
+                            <th class="py-3.5 px-4 font-semibold">Dates</th>
+                            <th class="py-3.5 px-4 font-semibold text-right">Orders</th>
+                            <th class="py-3.5 px-4 font-semibold text-right">Revenue (USD)</th>
+                            <th class="py-3.5 px-4 font-semibold text-right">Revenue (KHR)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody" class="divide-y divide-slate-800/40 bg-slate-900/20">
+                        <!-- Data inserted dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </div>
+
+    <script>
+        // Data injected by python compiler
+        const rawDataset = [{"week": "W4", "startDate": "2026-07-20", "endDate": "2026-07-26", "orders": 7, "amount": 16.47, "name": "ទាដើមចេកម្ជូរកូនម៉ែផ្ទះអ៊ីដា"}, {"week": "W3", "startDate": "2026-07-13", "endDate": "2026-07-19", "orders": 190, "amount": 365.51, "name": "ទាដើមចេកម្ជូរកូនម៉ែផ្ទះអ៊ីដា"}, {"week": "W3", "startDate": "2026-07-13", "endDate": "2026-07-19", "orders": 94, "amount": 228.7, "name": "ស្ដេចជ្រូកខ្វៃ"}, {"week": "W3", "startDate": "2026-07-13", "endDate": "2026-07-19", "orders": 33, "amount": 92.52, "name": "Yeak Laom Durain"}, {"week": "W3", "startDate": "2026-07-13", "endDate": "2026-07-19", "orders": 32, "amount": 55.09, "name": "នំមាត់ឆ្នាំង"}, {"week": "W3", "startDate": "2026-07-13", "endDate": "2026-07-19", "orders": 32, "amount": 68.55, "name": "ស្ដេចជ្រូកខ្វៃ"}, {"week": "W3", "startDate": "2026-07-13", "endDate": "2026-07-19", "orders": 26, "amount": 51.99, "name": "Visal Sovatey"}, {"week": "W3", "startDate": "2026-07-13", "endDate": "2026-07-19", "orders": 19, "amount": 43.98, "name": "នំមាត់ឆ្នាំង"}, {"week": "W3", "startDate": "2026-07-13", "endDate": "2026-07-19", "orders": 17, "amount": 28.98, "name": "Sabaidee"}, {"week": "W2", "startDate": "2026-07-06", "endDate": "2026-07-12", "orders": 98, "amount": 194.45, "name": "ទាដើមចេកម្ជូរកូនម៉ែផ្ទះអ៊ីដា"}, {"week": "W2", "startDate": "2026-07-06", "endDate": "2026-07-12", "orders": 70, "amount": 131.78, "name": "ទាដើមចេកម្ជូរកូនម៉ែផ្ទះអ៊ីដា"}, {"week": "W2", "startDate": "2026-07-06", "endDate": "2026-07-12", "orders": 58, "amount": 128.44, "name": "ស្ដេចជ្រូកខ្វៃ"}, {"week": "W2", "startDate": "2026-07-06", "endDate": "2026-07-12", "orders": 42, "amount": 77.75, "name": "នំមាត់ឆ្នាំង"}, {"week": "W2", "startDate": "2026-07-06", "endDate": "2026-07-12", "orders": 39, "amount": 106.48, "name": "Yeak Laom Durain"}, {"week": "W2", "startDate": "2026-07-06", "endDate": "2026-07-12", "orders": 39, "amount": 78.44, "name": "Visal Sovatey"}, {"week": "W2", "startDate": "2026-07-06", "endDate": "2026-07-12", "orders": 38, "amount": 100.44, "name": "ស្ដេចជ្រូកខ្វៃ"}, {"week": "W2", "startDate": "2026-07-06", "endDate": "2026-07-12", "orders": 26, "amount": 56.62, "name": "នំមាត់ឆ្នាំង"}, {"week": "W2", "startDate": "2026-07-06", "endDate": "2026-07-12", "orders": 17, "amount": 31.74, "name": "Sabaidee"}, {"week": "W2", "startDate": "2026-07-06", "endDate": "2026-07-12", "orders": 16, "amount": 38.44, "name": "ស្ដេចជ្រូកខ្វៃ"}, {"week": "W2", "startDate": "2026-07-06", "endDate": "2026-07-12", "orders": 10, "amount": 26.41, "name": "Chea Sopanha"}, {"week": "W2", "startDate": "2026-07-06", "endDate": "2026-07-12", "orders": 8, "amount": 20.31, "name": "ស្ដេចជ្រូកខ្វៃ"}, {"week": "W2", "startDate": "2026-07-06", "endDate": "2026-07-12", "orders": 8, "amount": 20.34, "name": "ស្ដេចជ្រូកខ្វៃ"}, {"week": "W1", "startDate": "2026-06-29", "endDate": "2026-07-05", "orders": 123, "amount": 256.67, "name": "ទាដើមចេកម្ជូរកូនម៉ែផ្ទះអ៊ីដា"}, {"week": "W1", "startDate": "2026-06-29", "endDate": "2026-07-05", "orders": 56, "amount": 118.26, "name": "នំមាត់ឆ្នាំង"}, {"week": "W1", "startDate": "2026-06-29", "endDate": "2026-07-05", "orders": 48, "amount": 117.19, "name": "ស្ដេចជ្រូកខ្វៃ"}, {"week": "W1", "startDate": "2026-06-29", "endDate": "2026-07-05", "orders": 24, "amount": 48.99, "name": "Visal Sovatey"}, {"week": "W1", "startDate": "2026-06-29", "endDate": "2026-07-05", "orders": 10, "amount": 28.03, "name": "Phalkun"}, {"week": "W1", "startDate": "2026-06-29", "endDate": "2026-07-05", "orders": 8, "amount": 14.31, "name": "DurianXBooking"}, {"week": "W1", "startDate": "2026-06-29", "endDate": "2026-07-05", "orders": 7, "amount": 18.8, "name": "Yeak Laom Durain"}, {"week": "W1", "startDate": "2026-06-29", "endDate": "2026-07-05", "orders": 7, "amount": 20.69, "name": "Chea Sopanha"}, {"week": "W1", "startDate": "2026-06-29", "endDate": "2026-07-05", "orders": 6, "amount": 9.79, "name": "Sabaidee"}];
+        
+        // UI Settings State
+        let groupingDirection = 'week'; // 'week' or 'merchant'
+        let isHorizontal = false;
+        let selectedMetric = 'orders'; // 'orders' or 'revenue'
+        let chartMode = 'grouped'; // 'grouped', 'stacked', 'percent'
+        let searchQuery = '';
+        
+        let chartInstance = null;
+        
+        // Exchange Rate Constants (Cambodian Riel purchase rate from FSD payments spec)
+        const RIEL_EXCHANGE_RATE = 4100;
+        
+        // Format functions
+        const formatUSD = (val) => '$' + val.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        const formatKHR = (val) => (Math.round(val * RIEL_EXCHANGE_RATE)).toLocaleString('en-KH') + ' KHR';
+
+        // Toggle Grouping Direction
+        function setGroupingDirection(direction) {
+            groupingDirection = direction;
+            
+            const weekBtn = document.getElementById('groupWeekBtn');
+            const merchantBtn = document.getElementById('groupMerchantBtn');
+            
+            if (groupingDirection === 'week') {
+                weekBtn.className = "px-4 py-2 text-xs md:text-sm font-medium rounded-lg transition-all duration-300 bg-indigo-600 text-white shadow-lg shadow-indigo-600/20";
+                merchantBtn.className = "px-4 py-2 text-xs md:text-sm font-medium rounded-lg transition-all duration-300 text-slate-400 hover:text-white";
+            } else {
+                merchantBtn.className = "px-4 py-2 text-xs md:text-sm font-medium rounded-lg transition-all duration-300 bg-indigo-600 text-white shadow-lg shadow-indigo-600/20";
+                weekBtn.className = "px-4 py-2 text-xs md:text-sm font-medium rounded-lg transition-all duration-300 text-slate-400 hover:text-white";
+            }
+            
+            renderChartAndTable();
+        }
+
+        // Set Horizontal Orientation
+        function setChartHorizontal(hz) {
+            isHorizontal = hz;
+            const colBtn = document.getElementById('chartColumnBtn');
+            const barBtn = document.getElementById('chartBarBtn');
+            
+            if (isHorizontal) {
+                barBtn.className = "p-2 rounded-lg text-indigo-400 bg-indigo-500/10 border border-indigo-500/20";
+                colBtn.className = "p-2 rounded-lg text-slate-400 hover:text-slate-200";
+            } else {
+                colBtn.className = "p-2 rounded-lg text-indigo-400 bg-indigo-500/10 border border-indigo-500/20";
+                barBtn.className = "p-2 rounded-lg text-slate-400 hover:text-slate-200";
+            }
+            
+            renderChartAndTable();
+        }
+
+        // Handle controls changes
+        function handleFilterChange() {
+            searchQuery = document.getElementById('searchInput').value.toLowerCase().trim();
+            selectedMetric = document.getElementById('metricSelect').value;
+            chartMode = document.getElementById('chartModeSelect').value;
+            renderChartAndTable();
+        }
+
+        // Process data according to state
+        function getFilteredData() {
+            let filtered = rawDataset;
+            
+            // Search filter
+            if (searchQuery) {
+                filtered = filtered.filter(item => item.name.toLowerCase().includes(searchQuery));
+            }
+            
+            // Default sort: Merchant Name (A-Z) then Week (W1 -> W4)
+            filtered.sort((a, b) => {
+                const nameComp = a.name.localeCompare(b.name, 'km');
+                if (nameComp !== 0) return nameComp;
+                return a.week.localeCompare(b.week);
+            });
+            
+            return filtered;
+        }
+
+        // Initialize KPIs from the entire dataset
+        function initKPIs() {
+            let totalOrders = 0;
+            let totalRevenueUSD = 0;
+            const uniqueMerchants = new Set();
+            const uniqueWeeks = new Set();
+            const merchantOrderTotals = {};
+
+            rawDataset.forEach(row => {
+                totalOrders += row.orders;
+                totalRevenueUSD += row.amount;
+                uniqueMerchants.add(row.name);
+                uniqueWeeks.add(row.week);
+                merchantOrderTotals[row.name] = (merchantOrderTotals[row.name] || 0) + row.orders;
+            });
+
+            // Find top merchant
+            let topMerchantName = "-";
+            let topMerchantOrders = 0;
+            Object.entries(merchantOrderTotals).forEach(([name, ords]) => {
+                if (ords > topMerchantOrders) {
+                    topMerchantOrders = ords;
+                    topMerchantName = name;
+                }
+            });
+
+            document.getElementById('kpiTotalOrders').innerText = totalOrders.toLocaleString();
+            document.getElementById('kpiTotalRevenueUSD').innerText = formatUSD(totalRevenueUSD);
+            document.getElementById('kpiTotalRevenueKHR').innerText = formatKHR(totalRevenueUSD);
+            document.getElementById('kpiWeeksCount').innerText = uniqueWeeks.size + " Weeks";
+            
+            const topEl = document.getElementById('kpiTopMerchant');
+            topEl.innerText = topMerchantName;
+            topEl.title = topMerchantName;
+            document.getElementById('kpiTopMerchantOrders').innerText = `${topMerchantOrders.toLocaleString()} Orders Total`;
+        }
+
+        // Generate ApexChart Options & Series based on grouping direction
+        function buildChartConfig(filteredData) {
+            const weeksList = [...new Set(rawDataset.map(row => row.week))].sort();
+            const merchantsList = [...new Set(filteredData.map(row => row.name))].sort((a,b) => a.localeCompare(b, 'km'));
+            
+            let categories = [];
+            let series = [];
+            
+            if (groupingDirection === 'week') {
+                // X-Axis represents Weeks
+                categories = weeksList;
+                
+                // Each series is a Merchant
+                merchantsList.forEach(mName => {
+                    const seriesData = weeksList.map(wk => {
+                        const match = filteredData.find(row => row.name === mName && row.week === wk);
+                        if (!match) return 0;
+                        return selectedMetric === 'orders' ? match.orders : match.amount;
+                    });
+                    
+                    // Only add if there is some activity
+                    if (seriesData.some(v => v > 0)) {
+                        series.push({
+                            name: mName,
+                            data: seriesData
+                        });
+                    }
+                });
+            } else {
+                // X-Axis represents Merchants
+                categories = merchantsList;
+                
+                // Each series is a Week (W1, W2, etc.)
+                weeksList.forEach(wk => {
+                    const seriesData = merchantsList.map(mName => {
+                        const match = filteredData.find(row => row.name === mName && row.week === wk);
+                        if (!match) return 0;
+                        return selectedMetric === 'orders' ? match.orders : match.amount;
+                    });
+                    
+                    series.push({
+                        name: wk,
+                        data: seriesData
+                    });
+                });
+            }
+            
+            return { categories, series };
+        }
+
+        // Render ApexChart and Table
+        function renderChartAndTable() {
+            const data = getFilteredData();
+            
+            // 1. Table Rendering
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
+            
+            if (data.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="py-8 text-center text-slate-500 text-xs">No merchants match your filter.</td>
+                    </tr>
+                `;
+            } else {
+                data.forEach(item => {
+                    const tr = document.createElement('tr');
+                    tr.className = "hover:bg-slate-800/35 transition-colors duration-150 border-b border-slate-800/30";
+                    tr.innerHTML = `
+                        <td class="py-3 px-4 font-medium text-white truncate max-w-[200px]" title="${item.name}">${item.name}</td>
+                        <td class="py-3 px-4 text-slate-400 font-semibold font-outfit">${item.week}</td>
+                        <td class="py-3 px-4 text-slate-500 text-xs">${item.startDate} ~ ${item.endDate}</td>
+                        <td class="py-3 px-4 text-right font-semibold font-outfit text-indigo-300">${item.orders.toLocaleString()}</td>
+                        <td class="py-3 px-4 text-right font-outfit text-emerald-400 font-medium">${formatUSD(item.amount)}</td>
+                        <td class="py-3 px-4 text-right font-outfit text-slate-400 text-xs">${formatKHR(item.amount)}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+            
+            // 2. Chart Configurations
+            const { categories, series } = buildChartConfig(data);
+            
+            const isStacked = chartMode === 'stacked' || chartMode === 'percent';
+            const isPercent = chartMode === 'percent';
+            
+            // Responsive height estimation
+            let chartHeight = 450;
+            if (isHorizontal) {
+                chartHeight = Math.max(450, categories.length * (isStacked ? 40 : series.length * 10) + 100);
+            }
+            
+            const options = {
+                series: series,
+                chart: {
+                    type: 'bar',
+                    height: chartHeight,
+                    stacked: isStacked,
+                    stackType: isPercent ? '100%' : undefined,
+                    toolbar: { show: true },
+                    background: 'transparent',
+                    foreColor: '#94a3b8'
+                },
+                plotOptions: {
+                    bar: {
+                        horizontal: isHorizontal,
+                        columnWidth: groupingDirection === 'week' ? '70%' : '55%',
+                        borderRadius: isStacked ? 0 : 4,
+                        dataLabels: {
+                            position: isStacked ? 'center' : 'top',
+                        },
+                    }
+                },
+                dataLabels: {
+                    enabled: categories.length < 15 && series.length < 8,
+                    formatter: function (val) {
+                        if (!val) return '';
+                        if (selectedMetric === 'revenue') return '$' + Math.round(val);
+                        return Math.round(val).toLocaleString();
+                    },
+                    style: {
+                        fontSize: '9px',
+                        colors: ["#ffffff"],
+                        fontFamily: 'Plus Jakarta Sans'
+                    }
+                },
+                stroke: {
+                    show: true,
+                    width: isStacked ? 1 : 2,
+                    colors: isStacked ? ['rgba(15,23,42,0.6)'] : ['transparent']
+                },
+                xaxis: {
+                    categories: categories,
+                    labels: {
+                        rotate: -45,
+                        rotateAlways: !isHorizontal && categories.length > 5,
+                        style: {
+                            fontSize: '10px',
+                            fontFamily: 'Plus Jakarta Sans'
+                        }
+                    }
+                },
+                yaxis: {
+                    title: {
+                        text: isHorizontal ? undefined : (selectedMetric === 'orders' ? 'Orders Volume' : 'Revenue (USD)'),
+                        style: {
+                            color: '#94a3b8',
+                            fontFamily: 'Plus Jakarta Sans',
+                            fontWeight: 500
+                        }
+                    },
+                    labels: {
+                        formatter: function (val) {
+                            if (selectedMetric === 'revenue') return '$' + Math.round(val);
+                            return Math.round(val);
+                        }
+                    }
+                },
+                theme: {
+                    palette: 'palette1' // Beautiful native palette
+                },
+                tooltip: {
+                    theme: 'dark',
+                    y: {
+                        formatter: function(val) {
+                            if (selectedMetric === 'revenue') {
+                                return `${formatUSD(val)} (${formatKHR(val)})`;
+                            }
+                            return `${val.toLocaleString()} Orders`;
+                        }
+                    }
+                },
+                legend: {
+                    position: isHorizontal ? 'top' : 'bottom',
+                    fontSize: '11px',
+                    fontFamily: 'Plus Jakarta Sans',
+                    labels: {
+                        colors: '#cbd5e1'
+                    }
+                },
+                grid: {
+                    borderColor: '#1e293b',
+                    strokeDashArray: 4,
+                    xaxis: {
+                        lines: { show: isHorizontal }
+                    },
+                    yaxis: {
+                        lines: { show: !isHorizontal }
+                    }
+                }
+            };
+            
+            if (chartInstance) {
+                chartInstance.destroy();
+            }
+            
+            chartInstance = new ApexCharts(document.querySelector("#chart"), options);
+            chartInstance.render();
+        }
+
+        // Initialize on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            initKPIs();
+            renderChartAndTable();
+        });
+    </script>
+</body>
+</html>
