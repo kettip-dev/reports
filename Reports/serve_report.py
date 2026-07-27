@@ -260,11 +260,10 @@ class SessionHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
             self.end_headers()
             return
 
-        # Default root '/' redirect to Dark_Order_Chart.html
+        # Default root '/' redirect to store portal
         if self.path in ['/', '']:
-            chart_rel = os.path.join('dark_order', 'Dark_Order_Chart.html')
-            if os.path.exists(os.path.join(SERVE_DIR, chart_rel)):
-                self.path = '/dark_order/Dark_Order_Chart.html'
+            if os.path.exists(os.path.join(SERVE_DIR, 'stores', 'index.html')):
+                self.path = '/stores/index.html'
 
         super().do_GET()
 
@@ -285,7 +284,7 @@ class SessionHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
 
                 self.send_response(302)
                 self.send_header('Set-Cookie', f'durianx_session={session_token}; Path=/; HttpOnly; SameSite=Lax')
-                self.send_header('Location', '/dark_order/Dark_Order_Chart.html')
+                self.send_header('Location', '/stores/index.html')
                 self.end_headers()
             else:
                 self.render_login_page(
@@ -297,7 +296,7 @@ class SessionHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
 
     def redirect_to_dashboard(self):
         self.send_response(302)
-        self.send_header('Location', '/dark_order/Dark_Order_Chart.html')
+        self.send_header('Location', '/stores/index.html')
         self.end_headers()
 
 

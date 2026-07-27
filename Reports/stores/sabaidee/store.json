@@ -1,0 +1,16 @@
+{
+  "store_id": "sabaidee",
+  "name_en": "Sabaidee Vientiane",
+  "name_kh": "Sabaidee",
+  "type": "merchant_partner",
+  "service": "express",
+  "exchange_rate": 4000,
+  "currency_base": "USD",
+  "dashboard": "index.html",
+  "data_files": {
+    "weekly": "data/weekly.csv"
+  },
+  "active": true,
+  "created": "2026-06-29",
+  "updated": "2026-07-26"
+}

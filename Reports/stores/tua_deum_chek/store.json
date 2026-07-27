@@ -1,0 +1,19 @@
+﻿{
+  "store_id": "tua_deum_chek",
+  "name_en": "Tua Deum Chek",
+  "name_kh": "ទាដើមចេកម្ជូរកូនម៉ែផ្ទះអ៊ីដា",
+  "type": "dark_store",
+  "service": "express",
+  "exchange_rate": 4000,
+  "currency_base": "USD",
+  "currency_local": "KHR",
+  "dashboard": "index.html",
+  "data_files": {
+    "revenue":    "data/revenue.csv",
+    "phone_lead": "data/phone_lead.csv",
+    "senders":    "data/senders.csv"
+  },
+  "active": true,
+  "created": "2026-01-22",
+  "updated": "2026-07-26"
+}

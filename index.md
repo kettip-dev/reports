@@ -1,28 +1,28 @@
-# Reports Index
+# Services Index
 
-> **Purpose:** This folder contains weekly sales reports, transactional raw data exports, and interactive analytical charts for DurianX merchants.
+> **Purpose:** This folder contains catalogs and procedures related to active platform services, container environments, and infrastructure migrations.
 
 ---
 
 ## 📂 Sub-Directories
 
-*No sub-directories exist in this folder.*
+| Directory | Description |
+| :--- | :--- |
+| [Reports](./Reports) | Weekly merchant performance data exports and interactive dashboards |
 
 ---
 
 ## 📄 Documents in this Directory
 
 | Document | Type | Description | Status |
-| :--- | :---: | :--- | :--- |
-| [Result_8.csv](./Result_8.csv) | DATA | Raw CSV export of weekly merchant transaction count and revenue values | Ready |
-| [Result_8_Chart.html](./Result_8_Chart.html) | HTML | Interactive dashboard and column/bar chart showing merchant performance (Single Period) | Ready |
-| [Result_11.csv](./Result_11.csv) | DATA | Raw CSV export of weekly merchant transactions split by week index (W1-W4) | Ready |
-| [Result_11_Chart.html](./Result_11_Chart.html) | HTML | Interactive weekly grouped performance comparison dashboard by merchant | Ready |
-| [`serve_report.py`](./serve_report.py) | SCRIPT | Python web server script with Basic Auth to host password-protected reports | Ready |
+| :--- | :--- | :--- | :--- |
+| [2026-07-17_OPS_STD_Running-Services-Inventory_v1.0.md](./2026-07-17_OPS_STD_Running-Services-Inventory_v1.0.md) | STD | Docker snapshot inventory of running services across sandbox and production nodes | Draft |
+| [2026-07-20_OPS_SOP_VM-to-K8s-Migration-Plan_v0.1.md](./2026-07-20_OPS_SOP_VM-to-K8s-Migration-Plan_v0.1.md) | SOP | Standard Operating Procedure and migration plan for the first phase of VM-to-K8s migration (ORS Engine and Admin Laravel) | Draft |
+| [2026-07-20_OPS_STD_K8s-Production-Migration-Plan_v0.1.md](./2026-07-20_OPS_STD_K8s-Production-Migration-Plan_v0.1.md) | STD | IT standard defining the phased service grouping, database decoupling, routing, and rollback procedures for all remaining services | Draft |
 
 ---
 
 ## 🔗 Related Resources
-- [Main Workspace README](../../README.md)
-- [Services Index](../index.md)
-- [Global Index](../../FSD/index.md)
+- [Main Workspace README](../README.md)
+- [Global FSD Index](../FSD/index.md)
+- [Change Request Index](../Change%20Request/index.md)

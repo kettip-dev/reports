@@ -154,14 +154,14 @@ def login():
         user_in = request.form.get('username', '').strip()
         pass_in = request.form.get('password', '').strip()
         if user_in == USERNAME and pass_in == PASSWORD:
-            resp = make_response(redirect('/dark_order/Dark_Order_Chart.html'))
+            resp = make_response(redirect('/stores/tua_deum_chek/index.html'))
             resp.set_cookie('durianx_session', AUTH_TOKEN, max_age=60*60*24*7, httponly=True, samesite='Lax')
             return resp
         else:
             return render_template_string(LOGIN_HTML, error_msg="Invalid username or password. Please try again.", input_username=user_in)
     
     if is_authenticated():
-        return redirect('/dark_order/Dark_Order_Chart.html')
+        return redirect('/stores/tua_deum_chek/index.html')
     return render_template_string(LOGIN_HTML, error_msg="", input_username="")
 
 @app.route('/logout')
@@ -177,7 +177,7 @@ def catch_all(path):
         return redirect('/login')
 
     if not path or path == '/':
-        path = 'dark_order/Dark_Order_Chart.html'
+        path = 'stores/tua_deum_chek/index.html'
 
     file_path = os.path.join(REPORTS_DIR, path)
     if os.path.exists(file_path) and os.path.isfile(file_path):
@@ -186,12 +186,12 @@ def catch_all(path):
             content = f.read()
         return Response(content, mimetype=mime_type or 'text/plain')
 
-    # If missing, fallback to main chart
-    chart_path = os.path.join(REPORTS_DIR, 'dark_order', 'Dark_Order_Chart.html')
-    if os.path.exists(chart_path):
-        with open(chart_path, 'rb') as f:
+    # If missing, fallback to tua_deum_chek store dashboard
+    fallback_path = os.path.join(REPORTS_DIR, 'stores', 'tua_deum_chek', 'index.html')
+    if os.path.exists(fallback_path):
+        with open(fallback_path, 'rb') as f:
             return Response(f.read(), mimetype='text/html')
-            
+
     return Response("File Not Found", status=404)
 
 # Vercel WSGI Handler

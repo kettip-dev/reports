@@ -1,0 +1,17 @@
+{
+  "store_id": "sdech_chrouk_khvai",
+  "name_en": "Sdech Chrouk Khvai",
+  "name_kh": "ស្ដេច ជ្រូកខ្វៃ",
+  "type": "merchant_partner",
+  "service": "express",
+  "exchange_rate": 4000,
+  "currency_base": "USD",
+  "currency_local": "KHR",
+  "dashboard": "index.html",
+  "data_files": {
+    "weekly": "data/weekly.csv"
+  },
+  "active": true,
+  "created": "2026-06-29",
+  "updated": "2026-07-26"
+}

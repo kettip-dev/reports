@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DurianX Store Analytics — Sabaidee</title>
+    <meta name="description" content="DurianX Store Analytics — Sales performance, weekly order volume, and revenue trends for Sabaidee store.">
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --bg-deep: #060b18;
+            --bg-card: rgba(15,26,50,0.85);
+            --border: rgba(255,255,255,0.07);
+            --accent-1: #38bdf8;
+            --accent-2: #10b981;
+            --accent-3: #f59e0b;
+            --accent-4: #a78bfa;
+            --accent-5: #6366f1;
+            --text-primary: #f1f5f9;
+            --text-muted: #64748b;
+            --text-sub: #94a3b8;
+        }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: var(--bg-deep);
+            background-image:
+                radial-gradient(ellipse 80% 60% at 50% -10%, rgba(56,189,248,0.18) 0%, transparent 65%),
+                radial-gradient(ellipse 60% 50% at 90% 90%, rgba(16,185,129,0.12) 0%, transparent 60%);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-thumb { background: rgba(56,189,248,0.35); border-radius: 4px; }
+
+        /* Topbar */
+        .topbar {
+            background: rgba(6,11,24,0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            padding: 0 32px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .topbar-left { display: flex; align-items: center; gap: 16px; }
+        .back-btn {
+            display: flex; align-items: center; gap: 6px;
+            padding: 5px 12px; border-radius: 8px; font-size: 12px; font-weight: 600;
+            background: rgba(255,255,255,0.05); border: 1px solid var(--border);
+            color: var(--text-sub); text-decoration: none; transition: all 0.2s;
+        }
+        .back-btn:hover { background: rgba(56,189,248,0.15); color: #fff; border-color: rgba(56,189,248,0.3); }
+        .logo-pill {
+            background: linear-gradient(135deg, #38bdf8, #6366f1);
+            color: #fff; font-family: 'Outfit', sans-serif; font-weight: 800;
+            font-size: 13px; padding: 4px 14px; border-radius: 50px; text-decoration: none;
+        }
+        .nav-links { display: flex; align-items: center; gap: 4px; }
+        .nav-link {
+            padding: 6px 14px; border-radius: 8px; font-size: 13px; font-weight: 500;
+            color: var(--text-sub); text-decoration: none; transition: all 0.2s;
+        }
+        .nav-link:hover { background: rgba(255,255,255,0.06); color: var(--text-primary); }
+        .nav-link.active { background: rgba(56,189,248,0.15); color: #38bdf8; border: 1px solid rgba(56,189,248,0.25); }
+        
+        .topbar-right { display: flex; align-items: center; gap: 12px; }
+        .badge-live {
+            display: flex; align-items: center; gap: 6px;
+            background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.25);
+            border-radius: 50px; padding: 4px 12px; font-size: 11px; font-weight: 600; color: #10b981;
+        }
+        .badge-live::before {
+            content: ''; width: 6px; height: 6px; background: #10b981; border-radius: 50%;
+            animation: pulse 1.8s infinite;
+        }
+        @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.7)} }
+
+        /* Layout */
+        .page { max-width: 1280px; margin: 0 auto; padding: 32px 24px 60px; }
+        
+        /* Store Header Card */
+        .store-header-card {
+            background: var(--bg-card); border: 1px solid var(--border); border-radius: 24px;
+            padding: 28px 32px; margin-bottom: 32px;
+            display: flex; align-items: center; justify-content: space-between; gap: 24px;
+            position: relative; overflow: hidden;
+        }
+        .store-header-card::after {
+            content: ''; position: absolute; top: 0; right: 0; width: 300px; height: 100%;
+            background: radial-gradient(circle at top right, rgba(56,189,248,0.15), transparent 70%);
+            pointer-events: none;
+        }
+        .store-identity { display: flex; align-items: center; gap: 20px; }
+        .store-avatar {
+            width: 64px; height: 64px; border-radius: 18px;
+            background: linear-gradient(135deg, rgba(56,189,248,0.2), rgba(99,102,241,0.2));
+            border: 1px solid rgba(56,189,248,0.3);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 28px;
+        }
+        .store-titles h1 {
+            font-family: 'Outfit', sans-serif; font-size: 28px; font-weight: 800;
+            line-height: 1.2; letter-spacing: -0.5px; color: var(--text-primary);
+        }
+        .store-titles p { font-size: 13px; color: var(--text-sub); margin-top: 4px; }
+        .store-badges { display: flex; gap: 8px; margin-top: 8px; }
+        .badge-tag {
+            font-size: 10px; font-weight: 700; padding: 3px 10px; border-radius: 50px;
+            text-transform: uppercase; letter-spacing: 0.8px;
+        }
+
+        /* KPI Cards Grid */
+        .kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 32px; }
+        @media(max-width:900px){.kpi-row{grid-template-columns:repeat(2,1fr);}}
+        .kpi-card {
+            background: var(--bg-card); border: 1px solid var(--border); border-radius: 18px;
+            padding: 20px; transition: border-color 0.25s, transform 0.2s;
+        }
+        .kpi-card:hover { border-color: rgba(56,189,248,0.3); transform: translateY(-2px); }
+        .kpi-label { font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--text-muted); display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+        .kpi-icon { width: 32px; height: 32px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 15px; }
+        .kpi-value { font-family: 'Outfit', sans-serif; font-size: 26px; font-weight: 800; color: var(--text-primary); }
+        .kpi-sub { font-size: 11px; font-weight: 600; margin-top: 4px; }
+        .kpi-note { font-size: 10px; color: var(--text-muted); margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); }
+
+        /* Section Titles */
+        .section-title {
+            font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 700;
+            letter-spacing: 1px; text-transform: uppercase; color: var(--text-muted);
+            margin-bottom: 16px; display: flex; align-items: center; gap: 10px;
+        }
+        .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+        /* Charts Section */
+        .chart-grid-2 { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-bottom: 32px; }
+        @media(max-width:900px){.chart-grid-2{grid-template-columns:1fr;}}
+        .chart-card {
+            background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px;
+            padding: 24px;
+        }
+        .chart-card h3 { font-family: 'Outfit', sans-serif; font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+        .chart-card p { font-size: 12px; color: var(--text-sub); margin-bottom: 16px; }
+
+        /* Table */
+        .table-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; padding: 24px; overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 13px; }
+        th { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); padding: 12px 16px; border-bottom: 1px solid var(--border); }
+        td { padding: 14px 16px; border-bottom: 1px solid rgba(255,255,255,0.03); color: var(--text-primary); }
+        tr:hover td { background: rgba(56,189,248,0.04); }
+        .num { font-family: 'Outfit', sans-serif; font-weight: 700; }
+        .green { color: #10b981; }
+        .badge { padding: 3px 8px; border-radius: 50px; font-size: 11px; font-weight: 700; }
+        .badge-up { background: rgba(16,185,129,0.12); color: #10b981; }
+        .badge-down { background: rgba(244,63,94,0.12); color: #f43f5e; }
+
+        footer { text-align: center; font-size: 11px; color: var(--text-muted); padding: 32px; border-top: 1px solid var(--border); margin-top: 32px; }
+    </style>
+</head>
+<body>
+
+<header class="topbar">
+    <div class="topbar-left">
+        <a href="/stores/index.html" class="back-btn">← All Stores</a>
+        <a href="/stores/index.html" class="logo-pill">DurianX</a>
+        <div class="nav-links">
+            <a href="/stores/index.html" class="nav-link">🏪 Store Reports</a>
+            <a href="/stores/enterprise.html" class="nav-link">🚀 Enterprise Overview</a>
+            <a href="/stores/weekly_performance.html" class="nav-link">📊 Weekly Performance</a>
+        </div>
+    </div>
+    <div class="topbar-right">
+        <span class="badge-live">LIVE · July 2026</span>
+    </div>
+</header>
+
+<main class="page">
+
+    <!-- Store Header -->
+    <div class="store-header-card">
+        <div class="store-identity">
+            <div class="store-avatar">🍲</div>
+            <div class="store-titles">
+                <h1>Sabaidee</h1>
+                <p>Sabaidee Vientiane &bull; Store ID: <code>sabaidee</code> &bull; Express Partner Store</p>
+                <div class="store-badges">
+                    <span class="badge-tag" style="background:rgba(56,189,248,0.12);color:#38bdf8;border:1px solid rgba(56,189,248,0.25);">Merchant Partner</span>
+                    <span class="badge-tag" style="background:rgba(16,185,129,0.12);color:#10b981;border:1px solid rgba(16,185,129,0.25);">Active</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- KPI Summary Cards -->
+    <div class="section-label">📊 July 2026 Performance Overview</div>
+    <div class="kpi-row">
+        <div class="kpi-card">
+            <div class="kpi-label">July Gross Revenue <div class="kpi-icon" style="background:rgba(16,185,129,0.12);color:#10b981;">💵</div></div>
+            <div class="kpi-value">$123.48</div>
+            <div class="kpi-sub" style="color:#10b981;">July MTD</div>
+            <div class="kpi-note">Sum of all completed orders in July</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-label">Completed Deliveries <div class="kpi-icon" style="background:rgba(99,102,241,0.12);color:#6366f1;">📦</div></div>
+            <div class="kpi-value">70</div>
+            <div class="kpi-sub" style="color:#6366f1;">Orders across 4 cohort weeks</div>
+            <div class="kpi-note">Peak week: 30 orders (W4 Jul 20–26)</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-label">Average Order Value <div class="kpi-icon" style="background:rgba(167,139,250,0.12);color:#a78bfa;">📈</div></div>
+            <div class="kpi-value">$1.76</div>
+            <div class="kpi-sub" style="color:#a78bfa;">Per order</div>
+            <div class="kpi-note">Consistent AOV baseline</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-label">Peak Week (W4) <div class="kpi-icon" style="background:rgba(245,158,11,0.12);color:#f59e0b;">🔥</div></div>
+            <div class="kpi-value">$52.97</div>
+            <div class="kpi-sub" style="color:#f59e0b;">30 orders (Jul 20–26)</div>
+            <div class="kpi-note">↑ +82.8% WoW growth</div>
+        </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="section-title">📈 Weekly Revenue & Order Growth Trend</div>
+    <div class="chart-grid-2" style="margin-bottom:32px;">
+        <div class="card chart-card">
+            <h3>Weekly Revenue & Volume Trend (July 2026)</h3>
+            <p>Weekly breakdown of gross realized revenue ($ USD) and completed delivery orders.</p>
+            <div id="weeklyTrendChart" style="height:300px;"></div>
+        </div>
+        <div class="card chart-card" style="display:flex;flex-direction:column;gap:12px;">
+            <h3>Performance Highlights</h3>
+            <p>Key highlights for Sabaidee in July 2026.</p>
+            <div style="background:rgba(56,189,248,0.08);border:1px solid rgba(56,189,248,0.15);border-radius:14px;padding:16px;">
+                <div style="font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">July Revenue Total</div>
+                <div style="font-family:'Outfit',sans-serif;font-size:28px;font-weight:800;color:var(--text-primary);">$123.48</div>
+            </div>
+            <div style="background:rgba(16,185,129,0.07);border:1px solid rgba(16,185,129,0.15);border-radius:12px;padding:14px;">
+                <div style="font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">W4 Growth vs W3</div>
+                <div style="font-family:'Outfit',sans-serif;font-size:22px;font-weight:800;color:#10b981;">+82.8% Revenue</div>
+                <div style="font-size:11px;color:var(--text-sub);">+$23.99 USD increase WoW</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Weekly Breakdown Table -->
+    <div class="section-title">📋 Weekly Performance Table — July 2026</div>
+    <div class="card table-card">
+        <table>
+            <thead>
+                <tr>
+                    <th>Week Period</th>
+                    <th>Week Label</th>
+                    <th>Completed Orders</th>
+                    <th>Revenue (USD)</th>
+                    <th>AOV (USD)</th>
+                    <th>WoW Growth</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Jul 20 — Jul 26</strong></td>
+                    <td><span class="badge" style="background:rgba(56,189,248,0.15);color:#38bdf8;">W4</span></td>
+                    <td class="num">30</td>
+                    <td class="num green">$52.97</td>
+                    <td class="num" style="color:var(--accent-5);">$1.77</td>
+                    <td><span class="badge badge-up">▲ +82.8%</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Jul 13 — Jul 19</strong></td>
+                    <td><span class="badge" style="background:rgba(56,189,248,0.15);color:#38bdf8;">W3</span></td>
+                    <td class="num">17</td>
+                    <td class="num green">$28.98</td>
+                    <td class="num" style="color:var(--accent-5);">$1.70</td>
+                    <td><span class="badge badge-down">▼ -8.7%</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Jul 06 — Jul 12</strong></td>
+                    <td><span class="badge" style="background:rgba(56,189,248,0.15);color:#38bdf8;">W2</span></td>
+                    <td class="num">17</td>
+                    <td class="num green">$31.74</td>
+                    <td class="num" style="color:var(--accent-5);">$1.87</td>
+                    <td><span class="badge badge-up">▲ +224.2%</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Jun 29 — Jul 05</strong></td>
+                    <td><span class="badge" style="background:rgba(56,189,248,0.15);color:#38bdf8;">W1</span></td>
+                    <td class="num">6</td>
+                    <td class="num green">$9.79</td>
+                    <td class="num" style="color:var(--accent-5);">$1.63</td>
+                    <td><span class="badge" style="background:rgba(255,255,255,0.06);color:var(--text-sub);">Baseline</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+</main>
+
+<footer>
+    DurianX Super App Analytics Platform &bull; Phnom Penh, Cambodia &bull; Store: Sabaidee &bull; Updated July 2026
+</footer>
+
+<script>
+// CHART: Weekly Trend Chart
+new ApexCharts(document.querySelector('#weeklyTrendChart'), {
+    series: [
+        { name: 'Revenue (USD)', type: 'area', data: [9.79, 31.74, 28.98, 52.97] },
+        { name: 'Completed Orders', type: 'line', data: [6, 17, 17, 30] }
+    ],
+    chart: { height: 300, type: 'line', toolbar: { show: false }, background: 'transparent' },
+    stroke: { width: [3, 2], curve: 'smooth' },
+    fill: { type: ['gradient','solid'], gradient: { opacityFrom: 0.35, opacityTo: 0.02 } },
+    colors: ['#38bdf8', '#6366f1'],
+    theme: { mode: 'dark' },
+    xaxis: { categories: ['W1 (Jun 29)', 'W2 (Jul 06)', 'W3 (Jul 13)', 'W4 (Jul 20)'], labels: { style: { colors: '#64748b' } } },
+    yaxis: [
+        { title: { text: 'Revenue ($ USD)', style: { color: '#38bdf8' } }, labels: { style: { colors: '#64748b' }, formatter: (v) => '$' + v.toFixed(0) } },
+        { opposite: true, title: { text: 'Orders', style: { color: '#6366f1' } }, labels: { style: { colors: '#64748b' } } }
+    ],
+    legend: { labels: { colors: '#f1f5f9' } },
+    grid: { borderColor: 'rgba(255,255,255,0.04)' },
+    tooltip: { theme: 'dark' }
+}).render();
+</script>
+
+</body>
+</html>
